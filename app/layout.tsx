@@ -1,5 +1,7 @@
 import '@/app/ui/global.css';
 import { inter } from '@/app/ui/fonts';
+import Layout from './dashboard/layout';
+import SideNav from '@/app/ui/dashboard/sidenav';
 
 export default function RootLayout({
   children,
@@ -8,7 +10,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={'${inter.className} antialiased'}>{children}</body>
+      {/* <div><SideNav/></div> */}
+      <body className={`${inter.className} antialiased`}>{children}</body>
+      
     </html>
   );
 }
