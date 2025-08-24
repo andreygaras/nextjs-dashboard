@@ -30,6 +30,38 @@ export async function fetchRevenue() {
   }
 }
 
+export async function fetchInvoiceCardData() {
+  try {
+  const invoiceCollectedPromise = sql`SELECT 
+  SUM(CASE WHEN status = 'paid' THEN amount ELSE 0 END) as "paid",
+  SUM(CASE WHEN status = 'pending' THEN amount ELSE 0 END) as "pending"
+  from invoices `;
+  const totalInvoicePromise = sql`SELECT COUNT(*) FROM invoices`;
+  const totalCustomersPromise = sql`SELECT COUNT(*) FROM customers`;
+  const data = await Promise.all([
+      invoiceCollectedPromise,
+      totalInvoicePromise,
+      totalCustomersPromise
+    ]);
+
+  const numberOfInvoiceCollected = formatCurrency(data[0][0].paid ?? '0');
+  const numberOfInvoicePending = formatCurrency(data[0][0].pending ?? '0');
+  const numberOfInvoiceTotal = Number(data[1][0].count ?? '0');
+  const numberOfCustomersTotal = Number(data[2][0].count ?? '0');
+
+  return {
+      numberOfInvoiceCollected,
+      numberOfInvoicePending,
+      numberOfInvoiceTotal,
+      numberOfCustomersTotal,
+    };
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch card data.');
+  }
+}
+
+
 export async function fetchLatestInvoices() {
   try {
     const data = await sql<LatestInvoiceRaw[]>`
